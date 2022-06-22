@@ -1,5 +1,5 @@
 use super::Markdown;
-use crate::markdown::{AsMarkdown, List};
+use crate::markdown::{AsMarkdown, List, Table};
 
 //region Heading
 #[test]
@@ -230,6 +230,25 @@ fn list() {
     assert_eq!(
         String::from_utf8(md.into_inner()).unwrap(),
         "\n   1. item 1\n   1. **bold**\n   1. nested list\n      * **bold***italic*"
+    );
+}
+//endregion
+
+//region Table
+#[test]
+fn table() {
+    let mut md = Markdown::new(Vec::new());
+    md.write(
+        Table::new(true)
+            .header(vec!["Header1", "Header2", "Header3"])
+            .rows(vec![vec!["row01", "row02", "row03"]]),
+    )
+    .unwrap();
+
+    assert_eq!(
+        String::from_utf8(md.into_inner()).unwrap(),
+        "<table><thead><tr><th>Header1</th><th>Header2</th><th>Header3</th></tr></thead>\
+        <tbody><tr><td>row01</td><td>row02</td><td>row03</td></tr></tbody></table>\n"
     );
 }
 //endregion

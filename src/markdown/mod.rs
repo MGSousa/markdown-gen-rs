@@ -249,6 +249,108 @@ impl MarkdownWritable for Heading<'_> {
 }
 //endregion
 
+//region Table
+/// Markdown Table
+pub struct Table<'a> {
+    gfm: bool,
+    columns: Vec<&'a str>,
+    rows: Vec<Vec<&'a str>>,
+}
+
+impl<'a> Table<'a> {
+    /// Creates an empty table
+    ///
+    /// # Arguments
+    /// * `gfm` - check to use GitHub Flavored Markdown Spec (supports HTML)
+    /// if not use default spec
+    pub fn new(gfm: bool) -> Self {
+        Self {
+            gfm,
+            columns: vec![],
+            rows: vec![vec![]],
+        }
+    }
+
+    /// Add headers to table
+    pub fn header(mut self, columns: Vec<&'a str>) -> Self {
+        self.columns = columns;
+        self
+    }
+
+    /// Appends rows to the table
+    pub fn rows(mut self, rows: Vec<Vec<&'a str>>) -> Self {
+        self.rows = rows;
+        self
+    }
+}
+
+impl MarkdownWritable for &'_ Table<'_> {
+    fn write_to(
+        &self,
+        writer: &mut dyn Write,
+        _: bool,
+        _: Escaping,
+        line_prefix: Option<&[u8]>,
+    ) -> Result<(), Error> {
+        // Check if is GitHub Flavored Markdown Spec
+        match self.gfm {
+            true => {
+                let mut table = String::from("<table>");
+                for (k, column) in self.columns.iter().enumerate() {
+                    if k == 0 {
+                        table += format!("<thead><tr><th>{}</th>", column).as_str();
+                    } else {
+                        table += format!("<th>{}</th>", column).as_str();
+                    }
+                }
+                table += "</tr></thead><tbody>";
+
+                for rows in &self.rows {
+                    for (r, row) in rows.iter().enumerate() {
+                        if r == 0 {
+                            table += format!("<tr><td>{}</td>", row).as_str();
+                        } else {
+                            table += format!("<td>{}</td>", row).as_str();
+                            if (rows.len() - 1) == r {
+                                table += "</tr>";
+                            }
+                        }
+                    }
+                }
+                table += "</tbody></table>";
+                writer.write_all(table.as_ref())?;
+            }
+            false => {
+                // TODO: add the normal spec here
+            }
+        }
+
+        write_line_prefixed(writer, b"\n", line_prefix)?;
+        Ok(())
+    }
+
+    fn count_max_streak(&self, _: u8, _carry: usize) -> (usize, usize) {
+        (0, 0)
+    }
+}
+
+impl MarkdownWritable for Table<'_> {
+    fn write_to(
+        &self,
+        writer: &mut dyn Write,
+        inner: bool,
+        escape: Escaping,
+        line_prefix: Option<&[u8]>,
+    ) -> Result<(), Error> {
+        (&self).write_to(writer, inner, escape, line_prefix)
+    }
+
+    fn count_max_streak(&self, char: u8, carry: usize) -> (usize, usize) {
+        (&self).count_max_streak(char, carry)
+    }
+}
+//endregion
+
 //region Link
 /// Markdown link
 pub struct Link<'a> {

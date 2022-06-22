@@ -64,3 +64,17 @@ md.write("test".heading(1)).unwrap();
 let vec = md.into_inner();
 assert_eq!(String::from_utf8(vec).unwrap(), "# test\n");
 ```
+
+You can also generate a Markdown table:
+```rust
+let file = File::create("test.md").unwrap();
+let mut md = Markdown::new(file);
+
+md.write(
+    Table::new(true)
+        .header(vec!["Header1", "Header2", "Header3"])
+        .rows(vec![
+            vec!["row01", "row02", "row03"],
+            vec!["row11", "row12", "row13"],
+        ]))?;
+```
