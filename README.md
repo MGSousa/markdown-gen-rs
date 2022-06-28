@@ -74,7 +74,7 @@ md.write(
     Table::new(true)
         .header(vec!["Header1", "Header2", "Header3"])
         .rows(vec![
-            vec!["row01", "row02", "row03"],
-            vec!["row11", "row12", "row13"],
+            vec!["row01".to_string(), "row02".to_string(), "row03".to_string()],
+            vec!["row11".to_string(), "row12".to_string(), "row13".to_string()],
         ]))?;
 ```
