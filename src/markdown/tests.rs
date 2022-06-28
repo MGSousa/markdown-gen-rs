@@ -241,7 +241,7 @@ fn table() {
     md.write(
         Table::new(true)
             .header(vec!["Header1", "Header2", "Header3"])
-            .rows(vec![vec!["row01", "row02", "row03"]]),
+            .rows(vec![vec!["row01".to_string(), "row02".to_string(), "row03".to_string()]]),
     )
     .unwrap();
 

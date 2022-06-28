@@ -254,7 +254,7 @@ impl MarkdownWritable for Heading<'_> {
 pub struct Table<'a> {
     gfm: bool,
     columns: Vec<&'a str>,
-    rows: Vec<Vec<&'a str>>,
+    rows: Vec<Vec<String>>,
 }
 
 impl<'a> Table<'a> {
@@ -278,7 +278,7 @@ impl<'a> Table<'a> {
     }
 
     /// Appends rows to the table
-    pub fn rows(mut self, rows: Vec<Vec<&'a str>>) -> Self {
+    pub fn rows(mut self, rows: Vec<Vec<String>>) -> Self {
         self.rows = rows;
         self
     }
